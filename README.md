@@ -6,4 +6,4 @@ To build run `ng build` in the project folder. The build artifacts will be store
 
 ## Development server
 
-Run `node server.js` to start the server. Navigate to `http://localhost:3000/'. 
+Run "npm run dev" in the Backend folder to start the server. 

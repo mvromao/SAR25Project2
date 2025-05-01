@@ -37,6 +37,62 @@ This document outlines the recommended workflow for developing the auction appli
 1. Update the model in the models/ directory
 2. Use mongoose methods in the controller or service
 
+   **Examples:**
+   
+   ```typescript
+   // Example 1: Creating a new document in a controller
+   export const createItem = async (req: Request, res: Response): Promise<void> => {
+     try {
+       const newItem = new Item({
+         name: req.body.name,
+         description: req.body.description,
+         startingPrice: req.body.startingPrice,
+         seller: req.user._id // From auth middleware
+       });
+       
+       const savedItem = await newItem.save();
+       res.status(201).json(savedItem);
+     } catch (error) {
+       res.status(500).json({ message: 'Error creating item', error });
+     }
+   };
+   
+   // Example 2: Finding and updating documents in a service
+   export const updateBidService = async (itemId: string, userId: string, bidAmount: number): Promise<any> => {
+     // Find and update in one operation using findOneAndUpdate
+     const updatedItem = await Item.findOneAndUpdate(
+       { _id: itemId, currentBid: { $lt: bidAmount } }, // Query conditions
+       { 
+         currentBid: bidAmount,
+         currentBidder: userId,
+         $push: { bidHistory: { user: userId, amount: bidAmount, time: new Date() } }
+       },
+       { new: true, runValidators: true } // Options to return updated doc and run validators
+     );
+     
+     return updatedItem;
+   };
+   
+   // Example 3: Performing aggregations for reports
+   export const getPopularItemsService = async (limit: number = 10): Promise<any[]> => {
+     return Item.aggregate([
+       { $match: { status: 'active' } },
+       { $addFields: { bidCount: { $size: "$bidHistory" } } },
+       { $sort: { bidCount: -1 } },
+       { $limit: limit },
+       {
+         $lookup: {
+           from: 'users',
+           localField: 'seller',
+           foreignField: '_id',
+           as: 'sellerInfo'
+         }
+       },
+       { $project: { 'sellerInfo.password': 0 } } // Exclude sensitive data
+     ]);
+   };
+   ```
+
 ### Authentication
 
 - JWT tokens are used for authentication

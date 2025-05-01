@@ -5,12 +5,14 @@ import config from '../config/config';
 
 /**
  * Handle user authentication
- * Note: Maintaining original dummy functionality
+ * Note: Original dummy functionality
  */
 export const authenticate = (req: Request, res: Response): void => {
   console.log('Authenticate -> Received Authentication POST');
   
-  // Generate JWT token
+  // Generate JWT token youshould use a real user authentication here check in the database
+  User.findOne({ username: req.body.username })
+  // For now, we are just signing the request body
   const token = jwt.sign(req.body, config.jwtSecret);
   
   // Send response with token
@@ -24,13 +26,14 @@ export const authenticate = (req: Request, res: Response): void => {
 
 /**
  * Handle user registration
- * Note: Maintaining original dummy functionality
+ * Note: Original dummy functionality
  */
 export const registerUser = (req: Request, res: Response): void => {
   console.log("NewUser -> received form submission new user");
   console.log(req.body);
   
-  // Send dummy response as in the original code
+  // Send dummy response with user data
+  // In the  implementation, you have to save the user to the database
   res.json({
     name: "somename",
     email: "some@somemail.com",
@@ -46,6 +49,7 @@ export const registerUser = (req: Request, res: Response): void => {
  * Note: Maintaining original dummy functionality
  */
 export const getUsers = (req: Request, res: Response): void => {
-  // Original functionality just returned OK
+  // Go to the database and get all users
+  //  For now it just returs OK
   res.status(200).send('OK');
 };

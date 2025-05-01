@@ -3,7 +3,7 @@ import Item from '../models/item';
 
 /**
  * Create a new item
- * Note: Maintaining original dummy functionality
+ * Note: original dummy functionality
  */
 export const createItem = (req: Request, res: Response): void => {
   console.log("NewItem -> received form submission new item");
@@ -20,7 +20,7 @@ export const createItem = (req: Request, res: Response): void => {
 
 /**
  * Remove an existing item
- * Note: Maintaining original dummy functionality
+ * Note: original dummy functionality
  */
 export const removeItem = (req: Request, res: Response): void => {
   console.log("RemoveItem -> received form submission remove item");
@@ -32,10 +32,10 @@ export const removeItem = (req: Request, res: Response): void => {
 
 /**
  * Get all items
- * Note: Maintaining original dummy functionality
+ * Note: original dummy functionality
  */
 export const getItems = (req: Request, res: Response): void => {
-  // Create dummy items as in the original code
+  // Create dummy items 
   const items = [
     {
       description: 'Smartphone',

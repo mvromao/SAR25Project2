@@ -83,7 +83,7 @@ ngOnInit(): void {
       this.auctionservice.getUsers()
         .subscribe({
           next: result => {
-          let receiveddata = result as User[]; // cast the received data as an array of items (must be sent like that from server)
+          let receiveddata = result as User[]; // cast the received data as an array of users (must be sent like that from server)
             console.log("getUsers Auction Component -> received the following users: ", receiveddata);
           // do the rest of the needed processing here
         },
@@ -169,6 +169,50 @@ ngOnInit(): void {
 //function called when the remove item button is pressed.
   removeItem() {
   //use an HTTP call to the API to remove an item using the auction service.
-   }
+  }
+
+  /**
+   * Calculate the time progress percentage for the auction item
+   * @param item The auction item
+   * @returns A number between 0-100 representing progress percentage
+   */
+  getTimeProgress(item: Item): number {
+    if (!item || !item.remainingtime) {
+      return 0;
+    }
+
+    const maxTime = 3600000; // Assuming initial time is 1 hour (3600000 ms)
+    const remainingTime = item.remainingtime;
+    
+    // Calculate elapsed time as a percentage
+    const elapsedPercentage = ((maxTime - remainingTime) / maxTime) * 100;
+    
+    // Return a percentage value between 0-100
+    return Math.min(Math.max(elapsedPercentage, 0), 100);
+  }
+
+  /**
+   * Determine the color of the progress bar based on remaining time
+   * @param item The auction item
+   * @returns Material color for the progress bar
+   */
+  getTimeProgressColor(item: Item): string {
+    if (!item || !item.remainingtime) {
+      return 'warn'; // Red when no time or item data
+    }
+
+    // More than 50% time remaining - show green
+    if (item.remainingtime > 1800000) {
+      return 'primary'; // Blue
+    } 
+    // Between 25% and 50% time remaining - show accent (amber)
+    else if (item.remainingtime > 900000) {
+      return 'accent';
+    } 
+    // Less than 25% time remaining - show red
+    else {
+      return 'warn'; // Red
+    }
+  }
 
 }

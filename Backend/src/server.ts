@@ -97,9 +97,17 @@ const httpsServer = https.createServer(httpsOptions, app);
 // Setup Socket.IO
 const io = new Server(httpsServer, {
   cors: {
-    origin: `http://localhost:${config.httpsPort}`,
-    methods: ['GET', 'POST']
-  }
+    origin: [
+      `https://localhost:${config.httpsPort}`,
+      `http://localhost:${config.httpsPort}`,
+      `http://localhost:${config.port}`,
+      // Add any additional domains needed for production
+    ],
+    methods: ['GET', 'POST'],
+    credentials: true
+  },
+  pingTimeout: 60000, // Increase ping timeout to handle slow connections
+  transports: ['websocket', 'polling'] // Prefer WebSocket but fallback to polling if needed
 });
 
 // Initialize socket service

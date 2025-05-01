@@ -18,15 +18,23 @@ class SocketService {
     
     // JWT authentication for socket.io
     io.use((socket: Socket, next) => {
-      if (socket.handshake.query && socket.handshake.query['token']) {
-        const token = socket.handshake.query['token'] as string;
-        jwt.verify(token, config.jwtSecret, (err, decoded: any) => {
-          if (err) return next(new Error('Authentication error'));
+      // Check for token in query or auth object (supporting both methods)
+      const token = 
+        socket.handshake.query?.token as string || 
+        (socket.handshake.auth as any)?.token;
+        
+      if (token) {
+        jwt.verify(token, config.jwtSecret, (err: jwt.VerifyErrors | null, decoded: any) => {
+          if (err) {
+            console.error('Socket auth error:', err.message);
+            return next(new Error('Authentication error'));
+          }
           socket.data.decoded_token = decoded;
           next();
         });
       } else {
-        next(new Error('Authentication error'));
+        console.error('Socket auth error: No token provided');
+        next(new Error('Authentication error: No token provided'));
       }
     });
 
@@ -81,10 +89,10 @@ class SocketService {
    * Start auction timer for item remaining time updates
    */
   private startAuctionTimer(): void {
-    // Timer function to decrement remaining time (original functionality preserved)
+    // Timer function to decrement remaining time 
     this.intervalId = setInterval(() => {
-      // Original functionality would update item times here
-      // Preserving original behavior with no actual database operations
+      //  update item times here
+      // add actual database operations
     }, 1000);
   }
 

@@ -59,15 +59,6 @@ Backend/
 - **JWT**: Authentication and authorization
 - **HTTPS**: Secure communication
 
-## Learning Objectives
-
-This backend is designed for students to learn:
-
-1. RESTful API design with Express
-2. MongoDB data modeling with Mongoose
-3. Real-time communication with Socket.IO
-4. Authentication with JWT tokens
-5. TypeScript in a Node.js environment
 
 ## Development Notes
 

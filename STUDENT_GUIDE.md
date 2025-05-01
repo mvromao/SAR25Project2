@@ -8,7 +8,7 @@ This guide provides an overview of the MEAN (MongoDB, Express, Angular, Node.js)
 
 The application is divided into two main parts:
 
-1. **Frontend**: Angular application (in the `src/` directory)
+1. **Frontend**: Angular application (in the `Frontend/` directory)
 2. **Backend**: Node.js and Express application (in the `Backend/` directory)
 
 ### Frontend Structure (Angular)
@@ -16,7 +16,7 @@ The application is divided into two main parts:
 The Angular frontend follows a modular architecture organized by feature:
 
 ```
-src/
+Frontend/
 ├── app/
 │   ├── core/              # Core functionality used throughout the app
 │   │   ├── guards/        # Route guards for authentication
@@ -105,7 +105,7 @@ The application is an auction site with the following features:
 ### Prerequisites
 
 - Node.js (v14+)
-- MongoDB (local installation or MongoDB Atlas account)
+- MongoDB 
 - Git
 
 ### Setting Up the Development Environment
@@ -127,39 +127,327 @@ The application is an auction site with the following features:
    cd Backend
    npm start
    ```
-6. Start the Angular development server:
+6. Start the development server:
    ```
-   npm start
+   cd Backend
+   npm run dev
    ```
-7. Navigate to `https://localhost:3043` in your browser
+7. Navigate to `https://localhost:3043` or `http://localhost:3000` in your browser
 
 ## Development Guidelines
 
 ### Angular Development
 
 1. **Component Structure**: When creating new components, place them in the appropriate feature module.
+
+   ```typescript
+   // Example of an Angular component in features/auction
+   @Component({
+     selector: 'app-auction',
+     templateUrl: './auction.component.html',
+     styleUrls: ['./auction.component.css']
+   })
+   export class AuctionComponent implements OnInit {
+     auctions: Auction[] = [];
+     selectedAuction: Auction | null = null;
+     
+     constructor(private auctionService: AuctionService) { }
+     
+     ngOnInit(): void {
+       this.loadAuctions();
+     }
+     
+     // Component methods
+   }
+   ```
+
 2. **Services**: Services that are used across multiple feature modules should be placed in the core/services directory.
+
+   ```typescript
+   // Example of a core service from core/services/auction.service.ts
+   @Injectable({
+     providedIn: 'root'
+   })
+   export class AuctionService {
+     private apiUrl = 'api/items';
+     
+     constructor(private http: HttpClient) { }
+     
+     getItems(): Observable<Item[]> {
+       return this.http.get<Item[]>(this.apiUrl);
+     }
+     
+     // Additional service methods
+   }
+   ```
+
 3. **Models**: Data models should be defined in the core/models directory.
+
+   ```typescript
+   // Example from core/models/user.ts
+   export class User {
+     constructor (
+       public name: string,
+       public email: string,
+       public username: string,
+       public password: string,
+       public islogged: boolean,
+       public latitude: number,
+       public longitude: number
+     ){}
+   }
+   ```
+
 4. **State Management**: The application uses services for simple state management. For complex state, consider implementing NgRx.
+
+   ```typescript
+   // Simple state management in a service
+   @Injectable({
+     providedIn: 'root'
+   })
+   export class StateService {
+     private itemsSubject = new BehaviorSubject<Item[]>([]);
+     public items$ = this.itemsSubject.asObservable();
+     
+     updateItems(items: Item[]): void {
+       this.itemsSubject.next(items);
+     }
+   }
+   ```
+
 5. **Routing**: Add new routes in the appropriate feature module's routing file.
+
+   ```typescript
+   // Example feature routing module
+   const routes: Routes = [
+     { 
+       path: 'items', 
+       component: ItemsComponent,
+       canActivate: [AuthGuard]
+     },
+     { 
+       path: 'items/:id', 
+       component: ItemDetailComponent 
+     }
+   ];
+   
+   @NgModule({
+     imports: [RouterModule.forChild(routes)],
+     exports: [RouterModule]
+   })
+   export class ItemsRoutingModule { }
+   ```
 
 ### Backend Development
 
 1. **API Endpoints**: Add new endpoints in the appropriate route file in the `Backend/src/routes` directory.
+
+   ```typescript
+   // Example from Backend/src/routes/api.routes.ts
+   import express from 'express';
+   import { AuctionController } from '../controllers/auction.controller';
+   import { authMiddleware } from '../middlewares/auth.middleware';
+
+   const router = express.Router();
+   const auctionController = new AuctionController();
+
+   router.get('/items', authMiddleware, auctionController.getAllItems);
+   router.post('/newitem', authMiddleware, auctionController.createItem);
+
+   export default router;
+   ```
+
 2. **Controllers**: Implement controller logic in the `Backend/src/controllers` directory.
+
+   ```typescript
+   // Example controller method
+   export class ItemController {
+     async getAllItems(req: Request, res: Response): Promise<void> {
+       try {
+         const items = await Item.find();
+         res.status(200).json(items);
+       } catch (error) {
+         res.status(500).json({ message: 'Error fetching items', error });
+       }
+     }
+   }
+   ```
+
 3. **Models**: Define MongoDB schemas in the `Backend/src/models` directory.
+
+   ```typescript
+   // Example from Backend/src/models/item.ts
+   import mongoose, { Schema, Document } from 'mongoose';
+
+   // Item interface defining the document structure
+   export interface IItem extends Document {
+     description: string;
+     currentbid: number;
+     remainingtime: number;
+     buynow: number;
+     wininguser: string;
+     sold: boolean;
+     owner: string;
+     id: number;
+   }
+
+   // Item schema definition
+   const ItemSchema = new Schema({
+     description: String,
+     currentbid: Number,
+     remainingtime: Number,
+     buynow: Number,
+     wininguser: String,
+     sold: Boolean,
+     owner: String,
+     id: Number
+   });
+
+   // Add index for better query performance
+   ItemSchema.index({ sold: 1, remainingtime: 1 });
+
+   // Export the model
+   export default mongoose.model<IItem>('Item', ItemSchema);
+   ```
+
 4. **Middleware**: Add custom middleware in the `Backend/src/middlewares` directory.
+
+   ```typescript
+   // Example authentication middleware
+   import { Request, Response, NextFunction } from 'express';
+   import jwt from 'jsonwebtoken';
+   import config from '../config/config';
+
+   export const authMiddleware = (req: Request, res: Response, next: NextFunction): void => {
+     try {
+       const token = req.headers.authorization?.split(' ')[1];
+       
+       if (!token) {
+         res.status(401).json({ message: 'Authentication required' });
+         return;
+       }
+       
+       const decoded = jwt.verify(token, config.jwtSecret);
+       req.user = decoded;
+       next();
+     } catch (error) {
+       res.status(401).json({ message: 'Invalid or expired token' });
+     }
+   };
+   ```
+
 5. **Authentication**: The application uses JWT for authentication. Protected routes require a valid JWT token.
+
+   ```typescript
+   // Example JWT generation
+   const token = jwt.sign(
+     { userId: user._id, username: user.username },
+     config.jwtSecret,
+     { expiresIn: '24h' }
+   );
+   ```
+
+### Working with MongoDB
+
+1. **Connecting to the Database**:
+
+   ```typescript
+   // Example from Backend/src/config/db.ts
+   import mongoose from 'mongoose';
+   import config from './config';
+
+   export const connectDatabase = async (): Promise<void> => {
+     try {
+       mongoose.set('strictQuery', false);
+       
+       await mongoose.connect(config.mongoUri);
+       
+       console.log(`MongoDB connected: ${config.mongoUri}`);
+       
+       mongoose.connection.on('error', err => {
+         console.error(`MongoDB connection error: ${err}`);
+       });
+       
+       // Clean up connection on app termination
+       process.on('SIGINT', async () => {
+         await mongoose.connection.close();
+         console.log('MongoDB connection closed due to app termination');
+         process.exit(0);
+       });
+       
+     } catch (err) {
+       console.error('MongoDB connection error:', err);
+       process.exit(1);
+     }
+   };
+   ```
+
+2. **Performing CRUD Operations**:
+
+   ```typescript
+   // Create a new document
+   const createItem = async (itemData) => {
+     const newItem = new Item(itemData);
+     return await newItem.save();
+   };
+
+   // Read documents
+   const getItems = async (filter = {}) => {
+     return await Item.find(filter);
+   };
+
+   // Update a document
+   const updateItem = async (id, updateData) => {
+     return await Item.findByIdAndUpdate(id, updateData, { new: true });
+   };
+
+   // Delete a document
+   const deleteItem = async (id) => {
+     return await Item.findByIdAndDelete(id);
+   };
+   ```
+
+3. **Using Mongoose Queries**:
+
+   ```typescript
+   // Examples of various query methods
+   
+   // Find with conditions
+   const activeItems = await Item.find({ sold: false, remainingtime: { $gt: 0 } });
+   
+   // Sorting
+   const expensiveItems = await Item.find().sort({ currentbid: -1 });
+   
+   // Limiting results
+   const recentItems = await Item.find().sort({ _id: -1 }).limit(10);
+   
+   // Pagination
+   const pageSize = 20;
+   const pageNumber = 2;
+   const paginatedItems = await Item.find()
+     .skip((pageNumber - 1) * pageSize)
+     .limit(pageSize);
+     
+   // Selecting specific fields
+   const itemSummaries = await Item.find().select('description currentbid');
+   
+   // Population (joining)
+   const itemsWithOwners = await Item.find().populate('owner', 'username email');
+   ```
 
 ### Best Practices
 
 1. **Use TypeScript**: Write type-safe code with interfaces and proper typing.
+
+   ```typescript
+   // Type-safe function example
+   function calculateRemainingTime(endTime: Date): number {
+     const currentTime = new Date();
+     return Math.max(0, endTime.getTime() - currentTime.getTime());
+   }
+   ```
+
 2. **Follow Angular Style Guide**: Adhere to the [Angular Style Guide](https://angular.io/guide/styleguide).
-3. **Error Handling**: Implement proper error handling with try/catch blocks and error services.
-4. **Comments**: Write clear and concise comments explaining complex logic.
-5. **Testing**: Write unit tests for components and services.
-6. **Performance**: Be mindful of performance impacts, especially with Angular change detection.
-7. **Security**: Always validate user input on both client and server sides.
 
 ## Project Structure Best Practices
 
