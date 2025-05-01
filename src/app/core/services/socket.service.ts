@@ -1,7 +1,12 @@
 import { Injectable } from '@angular/core';
-import { SigninService } from './signin.service';
-import { Subject ,  Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Socket } from 'ngx-socket-io';
+import { SigninService } from './signin.service';
+
+// Import models from their new location
+import { Chat } from '../models/chat';
+import { Item } from '../models/item';
+import { Useronline } from '../models/useronline';
 
 @Injectable({
   providedIn: 'root'
@@ -13,9 +18,10 @@ export class SocketService {
   constructor(private signInService: SigninService, private socket: Socket) { }
  
 
-  connect (){             //add the jwt token to the options 
-    this.socket.ioSocket.io.opts.query = { token: this.signInService.token.token}
-  	this.socket.connect();
+  connect() {             //add the jwt token to the options 
+    // Set authentication token
+    this.socket.ioSocket.auth = { token: this.signInService.token.token };
+    this.socket.connect();
     console.log('Websocket connected with token', this.signInService.token.token);
   }
 

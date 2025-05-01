@@ -3,15 +3,15 @@
  * Modernized with TypeScript and best practices
  */
 import express from 'express';
-import * as fs from 'fs';
-import * as path from 'path';
+import fs from 'fs';
+import path from 'path';
 import favicon from 'serve-favicon';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import helmet from 'helmet';
-import * as http from 'http';
-import * as https from 'https';
+import http from 'http';
+import https from 'https';
 import { Server } from 'socket.io';
 import bodyParser from 'body-parser';
 import { Request, Response } from 'express';

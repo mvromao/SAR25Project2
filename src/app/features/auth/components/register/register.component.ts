@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { RegisterService } from '../register.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+
+// Import services and models from barrel files
+import { RegisterService } from '../../../../core/services';
+import { User } from '../../../../core/models';
 
 @Component({
   selector: 'app-register',

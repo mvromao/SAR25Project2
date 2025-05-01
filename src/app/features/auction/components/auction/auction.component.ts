@@ -1,14 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { SocketService } from '../socket.service';
-import { AuctionService } from '../auction.service';
-import { SigninService } from '../signin.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import {Item} from '../item';
-import {Chat} from '../chat';
-import {User} from '../user';
-import {Marker} from '../marker';
 
+// Import services from the barrel file
+import { AuctionService, SocketService, SigninService } from '../../../../core/services';
+
+// Import models from the barrel file 
+import { Item, User, Chat, Marker } from '../../../../core/models';
 
 @Component({
   selector: 'app-auction',

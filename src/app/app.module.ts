@@ -1,61 +1,48 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { HttpClientModule} from '@angular/common/http';
-//import Routing module
-import { AppRoutingModule } from './app-routing.module';
-//import SocketIoModule 
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 
+// Import routing module
+import { AppRoutingModule } from './app-routing.module';
+
+// Import the root component
 import { AppComponent } from './app.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import {MaterialModule}  from './material/material.module'
-//import Google maps Module 
-import { GoogleMapsModule } from '@angular/google-maps'
-import { ReactiveFormsModule } from '@angular/forms';
-import { FormsModule } from '@angular/forms'; // import the FormsModule
-import { MatListModule } from '@angular/material/list';
 
-import { AuctionComponent } from './auction/auction.component';
-import { InsertitemComponent } from './insertitem/insertitem.component';
-import { RegisterComponent } from './register/register.component';
-import { SigninComponent } from './signin/signin.component';
-import { AuthGuard } from './auth.guard';
-import {SocketService} from './socket.service';
-import {SigninService} from './signin.service';
-import {AuctionService} from './auction.service';
-import {RegisterService} from './register.service';
-import {InsertitemService} from './insertitem.service';
+// Import feature and core modules
+import { CoreModule } from './core/core.module';
+import { SharedModule } from './shared/shared.module';
+import { AuthModule } from './features/auth/auth.module';
+import { AuctionModule } from './features/auction/auction.module';
+import { ItemsModule } from './features/items/items.module';
 
-//the socket cannot start at bootstrap since the jwt token is still not available
-const config: SocketIoConfig = { url: window.location.origin, options: {autoConnect : false} };
+// The socket cannot start at bootstrap since the jwt token is still not available
+const config: SocketIoConfig = { url: window.location.origin, options: {autoConnect: false} };
 
 @NgModule({
   declarations: [
-    AppComponent,
-    AuctionComponent,
-    InsertitemComponent,
-    RegisterComponent,
-    SigninComponent
+    AppComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule,
-    ReactiveFormsModule,
-    FormsModule,
     BrowserAnimationsModule,
-    MatListModule,
-    MaterialModule,
     SocketIoModule.forRoot(config),
-    GoogleMapsModule
+    
+    // Core module - contains singleton services
+    CoreModule,
+    
+    // Shared module
+    SharedModule,
+    
+    // Feature modules
+    AuthModule,
+    AuctionModule,
+    ItemsModule
   ],
   providers: [
-     SigninService,
-     SocketService,
-     AuctionService,
-     RegisterService,
-     InsertitemService,
-     AuthGuard
+    provideHttpClient(withInterceptorsFromDi())
   ],
   bootstrap: [AppComponent]
 })

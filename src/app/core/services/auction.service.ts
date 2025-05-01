@@ -1,8 +1,11 @@
 import { Injectable } from '@angular/core';
-import {throwError,  Observable } from 'rxjs';
+import { throwError, Observable } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { catchError, map, tap } from 'rxjs/operators';
 import { SigninService } from './signin.service';
+// Add any models that might be needed
+import { Item } from '../models/item';
+import { User } from '../models/user';
 
 @Injectable({
   providedIn: 'root'

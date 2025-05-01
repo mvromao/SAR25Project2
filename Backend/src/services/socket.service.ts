@@ -18,8 +18,8 @@ class SocketService {
     
     // JWT authentication for socket.io
     io.use((socket: Socket, next) => {
-      if (socket.handshake.query && socket.handshake.query.token) {
-        const token = socket.handshake.query.token as string;
+      if (socket.handshake.query && socket.handshake.query['token']) {
+        const token = socket.handshake.query['token'] as string;
         jwt.verify(token, config.jwtSecret, (err, decoded: any) => {
           if (err) return next(new Error('Authentication error'));
           socket.data.decoded_token = decoded;
@@ -57,7 +57,7 @@ class SocketService {
       // Handle bid event
       socket.on('send:bid', (data) => {
         console.log("send:bid -> Received event send:bid with data = ", data);
-        // Original dummy functionality preserved
+        // Original dummy functionality 
       });
 
       // Handle message event

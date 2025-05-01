@@ -1,10 +1,14 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AuctionComponent } from './auction/auction.component';
-import { InsertitemComponent } from './insertitem/insertitem.component';
-import { RegisterComponent } from './register/register.component';
-import { SigninComponent } from './signin/signin.component';
-import { AuthGuard } from './auth.guard';
+
+// Import components from their new locations
+import { SigninComponent } from './features/auth/components/signin/signin.component';
+import { RegisterComponent } from './features/auth/components/register/register.component';
+import { AuctionComponent } from './features/auction/components/auction/auction.component';
+import { InsertitemComponent } from './features/items/components/insertitem/insertitem.component';
+
+// Import the auth guard from the barrel file
+import { AuthGuard } from './core/guards';
 
 // Define the routes
 const routes: Routes = [
@@ -24,19 +28,17 @@ const routes: Routes = [
   {
     path: 'insertitem',
     component: InsertitemComponent, 
-    canActivate: [AuthGuard]         //can only route here after sucessfull login
+    canActivate: [AuthGuard]         // can only route here after successful login
   },
   {
     path: 'auction',
     component: AuctionComponent,
-    canActivate: [AuthGuard]        //can only route here after sucessfull login
+    canActivate: [AuthGuard]        // can only route here after successful login
   }
 ];
 
-
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  providers: [AuthGuard],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

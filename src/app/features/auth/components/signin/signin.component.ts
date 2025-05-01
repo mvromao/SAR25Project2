@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { SigninService } from '../signin.service';
-import { SocketService } from '../socket.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+
+// Import services and models from barrel files
+import { SigninService, SocketService } from '../../../../core/services';
+import { Token } from '../../../../core/models';
 
 @Component({
   selector: 'app-signin',

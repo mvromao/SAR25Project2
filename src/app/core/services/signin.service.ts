@@ -1,9 +1,12 @@
-import {throwError,  Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpResponse, HttpErrorResponse } from '@angular/common/http';
-import { catchError, map, tap } from 'rxjs/operators';
-import {Token} from './token';
+import { Router } from '@angular/router';
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
+// Import models from their new location
+import { Token } from '../models/token';
+import { User } from '../models/user';
 
 @Injectable({
   providedIn: 'root'
