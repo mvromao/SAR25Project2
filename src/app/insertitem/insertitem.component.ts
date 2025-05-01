@@ -8,7 +8,8 @@ import { SigninService } from '../signin.service';
 @Component({
   selector: 'app-insertitem',
   templateUrl: './insertitem.component.html',
-  styleUrls: ['./insertitem.component.css']
+  styleUrls: ['./insertitem.component.css'],
+  standalone: false
 })
 export class InsertitemComponent implements OnInit {
   errorMessage : string; // string to store error messages

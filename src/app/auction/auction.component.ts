@@ -13,7 +13,8 @@ import {Marker} from '../marker';
 @Component({
   selector: 'app-auction',
   templateUrl: './auction.component.html',
-  styleUrls: ['./auction.component.css']
+  styleUrls: ['./auction.component.css'],
+  standalone: false
 })
 export class AuctionComponent implements OnInit {
   items: Item[]; //array of items to store the items.

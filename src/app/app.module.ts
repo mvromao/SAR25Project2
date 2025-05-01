@@ -26,10 +26,8 @@ import {AuctionService} from './auction.service';
 import {RegisterService} from './register.service';
 import {InsertitemService} from './insertitem.service';
 
-                             //the socket cannot start at bootstrap since the jwt token is still not available
-//const config: SocketIoConfig = { url: 'https://localhost:3000', options: {autoConnect : false} };
+//the socket cannot start at bootstrap since the jwt token is still not available
 const config: SocketIoConfig = { url: window.location.origin, options: {autoConnect : false} };
-
 
 @NgModule({
   declarations: [
