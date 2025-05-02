@@ -91,6 +91,10 @@ class SocketService {
   private startAuctionTimer(): void {
     // Timer function to decrement remaining time 
     this.intervalId = setInterval(() => {
+
+      // Function to update item times
+      // TODO: Implement actual logic to update item times in the database
+
       //  update item times here
       // add actual database operations
     }, 1000);

@@ -10,6 +10,8 @@ export const createItem = (req: Request, res: Response): void => {
   console.log(req.body);
   
   // Send dummy response as in the original code
+  // TODO: Implement actual logic to create item in the database
+  // For now, just log the item details to be created
   res.json({
     description: "somedescription",
     currentbid: "somecurrentbid",
@@ -26,6 +28,9 @@ export const removeItem = (req: Request, res: Response): void => {
   console.log("RemoveItem -> received form submission remove item");
   console.log(req.body);
   
+
+  // TODO: Implement actual logic to remove item from the database
+  // For now, just log the item ID to be removed
   // No response was sent in the original code
   res.status(200).end();
 };
