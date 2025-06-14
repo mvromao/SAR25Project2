@@ -4,7 +4,8 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface IItem extends Document {
   description: string;
   currentbid: number;
-  remainingtime: number;
+  dateEnd: Date;
+  remainingtime: number;  // Pode-se alterar para Date se necessário, assim fazendo o controle de tempo no browser
   buynow: number;
   wininguser: string;
   sold: boolean;
@@ -17,6 +18,7 @@ const ItemSchema = new Schema({
   description: String,
   currentbid: Number,
   remainingtime: Number,
+  dateEnd: Date,
   buynow: Number,
   wininguser: String,
   sold: Boolean,

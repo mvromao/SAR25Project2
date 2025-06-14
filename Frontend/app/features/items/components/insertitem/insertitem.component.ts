@@ -29,7 +29,7 @@ export class InsertitemComponent implements OnInit {
       description: new FormControl ('', [Validators.required]),
       currentbid: new FormControl ('', [Validators.required, Validators.pattern("^[0-9]*$")]), 
       buynow: new FormControl ('', [Validators.required, Validators.pattern("^[0-9]*$")]), 
-      remainingtime: new FormControl ('', [Validators.required, Validators.pattern("^[0-9]*$")]), 
+      dateEnd: new FormControl ('', [Validators.required]), 
       owner: new FormControl ('', [Validators.required])
   	 });
      this.itemForm.patchValue({owner: this.userName});

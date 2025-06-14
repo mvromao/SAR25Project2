@@ -2,7 +2,7 @@ import { Server, Socket } from 'socket.io';
 import * as jwt from 'jsonwebtoken';
 import config from '../config/config';
 import User from '../models/user';
-import Item from '../models/item';
+import item from '../models/item';
 
 class SocketService {
   private io: Server | null = null;
@@ -60,17 +60,53 @@ class SocketService {
       // Handle new user event
       socket.on('newUser:username', (data) => {
         console.log("newUser:username -> New user event received: ", data);
+        this.newLoggedUserBroadcast(username);
+        // Store new username in database
+        
       });
 
       // Handle bid event
       socket.on('send:bid', (data) => {
         console.log("send:bid -> Received event send:bid with data = ", data);
-        // Original dummy functionality 
+        
+        item.findById(data.item._id)
+          .then((itemData) => {
+            if (itemData) {
+              itemData.currentbid = data.bid;
+              itemData.wininguser = data.user;
+
+              // Small delay to show the item was sold
+              if(data.bid == itemData.buynow) {
+                itemData.remainingtime = 5;
+              }
+
+              itemData.save()
+                .then(async() => {
+                  if(data.bid == itemData.buynow){
+                    console.log("Buy now price met, item sold immediately");
+                    this.io?.emit('item:sold', itemData);
+                  } 
+                  console.log("Bid updated successfully");
+                  // Broadcast updated item to all clients
+                  const allItems = await item.find({});
+                  this.io?.emit('items:update', allItems);
+                })
+                .catch((err) => {
+                  console.error('Error updating item:', err);
+                });
+            } else {
+              console.error('Item not found');
+            }
+          })
+          .catch((err) => {
+            console.error('Error fetching item:', err);
+          });
       });
 
       // Handle message event
       socket.on('send:message', (chat) => {
         console.log("send:message received with -> ", chat);
+        
       });
 
       // Handle disconnection
@@ -92,11 +128,6 @@ class SocketService {
     // Timer function to decrement remaining time 
     this.intervalId = setInterval(() => {
 
-      // Function to update item times
-      // TODO: Implement actual logic to update item times in the database
-
-      //  update item times here
-      // add actual database operations
     }, 1000);
   }
 

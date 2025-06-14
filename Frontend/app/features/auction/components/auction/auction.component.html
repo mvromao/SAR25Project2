@@ -76,7 +76,9 @@
                   <td mat-cell *matCellDef="let item">
                     <mat-progress-bar mode="determinate" [value]="getTimeProgress(item)" 
                       [color]="getTimeProgressColor(item)"></mat-progress-bar>
-                    <span class="time-text">{{item.remainingtime}}</span>
+                    <mat-chip color="primary" selected class="time-text-chip"><mat-icon>timer</mat-icon>
+                      {{formatRemainingTime(item.remainingtime)}}
+                    </mat-chip>
                   </td>
                 </ng-container>
 
@@ -106,7 +108,7 @@
                 <tr mat-row *matRowDef="let row; columns: displayedColumns" 
                     (click)="onRowClicked(row)"
                     class="item-row"
-                    [class.selected-row]="selectedItem && row.id === selectedItem.id">
+                    [class.selected-row]="selectedItem && row._id === selectedItem._id">
                 </tr>
               </table>
             </mat-card-content>
